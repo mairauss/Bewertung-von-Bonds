@@ -51,12 +51,6 @@ ui <- fluidPage(
                )
            )
          ),
-<<<<<<< HEAD
-    tabPanel("Definition",
-        includeHTML("text.Rhtml")
-        )
-    ))
-=======
     tabPanel("Duration and Convexity",
              sidebarLayout(
                
@@ -74,9 +68,11 @@ ui <- fluidPage(
                  )
                )
              
+             )),
+             tabPanel("Definition",
+                      includeHTML("text.Rhtml")
              )
-    )))
->>>>>>> f1969063472a2f3f15d19fea76ad47c897de8cf0
+    ))
 
 server <- function(input, output) {
   output$distPlot <- renderPlot({
