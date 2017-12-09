@@ -51,8 +51,25 @@ ui <- fluidPage(
                )
            )
          ),
-    tabPanel("Definition")
-    ))
+    tabPanel("Duration and Convexity",
+             sidebarLayout(
+               
+               sidebarPanel(
+                 sliderInput("ytm2", label = "Yield to Maturity", max = .2, min = 0.01, value = .05, step = .01),
+                 sliderInput("coupon2", label = "Coupon Rate", max = .2, min = 0, value = .05, step = .01),
+                 sliderInput("maturity2", label = "Years to Maturity", max = 50, min = 1, value = 10),
+                 sliderInput("faceValue2", label = "Face Value", max = 10000, min = 1, value = 10),
+                 sliderInput("yieldChange2", label = "Change of Yield",  max = .2, min = 0.01, value = .01, step = .01)
+               ),
+               mainPanel(
+                 tabsetPanel(
+                   tabPanel("Duration", plotOutput("duration")),
+                   tabPanel("Convexity")
+                 )
+               )
+             
+             )
+    )))
 
 server <- function(input, output) {
   output$distPlot <- renderPlot({
@@ -184,7 +201,15 @@ output$disc <- renderPlot({
   text(x = 0.5, y = 0.5, labels = paste( round(discrate, 2), "%"), cex = 5)
   
 })
-
+output$duration <- renderPlot({
+  # Calculate bond price today
+  bondPrice_now <- (input$coupon2 * input$faceValue2) * ((1 - 1 / (1 + input$ytm2)^(input$maturity2)) / input$ytm2) + input$faceValue2 / (1 + input$ytm2)^(input$maturity2)
+  bondPrice_up <- (input$coupon2 * input$faceValue2) * ((1 - 1 / (1 + input$ytm2+input$yieldChange2)^(input$maturity2)) / (input$ytm2+input$yieldChange2)) + input$faceValue2 / (1 + input$ytm2+input$yieldChange2)^(input$maturity2)
+  bondPrice_down <- (input$coupon2 * input$faceValue2) * ((1 - 1 / (1 + input$ytm2-input$yieldChange2)^(input$maturity2)) / (input$ytm2-input$yieldChange2)) + input$faceValue2 / (1 + (input$ytm2-input$yieldChange2))^(input$maturity2)
+  duration<- (bondPrice_down-bondPrice_up)/(2*bondPrice_now*input$yieldChange2)
+  plot(0, ylim = c(0,1), xlim = c(0,1), type = "n", xaxt = "n", yaxt = "n", ylab = "", xlab = "")
+  text(x = 0.5, y = 0.5, labels = paste(round(duration, 2)), cex = 5)
+})
 }
  
 shinyApp(ui = ui, server = server)
