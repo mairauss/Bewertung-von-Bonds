@@ -68,8 +68,11 @@ ui <- fluidPage(
                  )
                )
              
+             )),
+             tabPanel("Definition",
+                      includeHTML("text.Rhtml")
              )
-    )))
+    ))
 
 server <- function(input, output) {
   output$distPlot <- renderPlot({
@@ -83,7 +86,6 @@ server <- function(input, output) {
     }else {
       bondValue <- (input$coupon * (input$faceValue / 4)) * ((1 - 1 / (1 + (input$ytm / 4))^(input$maturity * 4)) / (input$ytm / 4)) + input$faceValue / (1 + (input$ytm / 4))^(input$maturity * 4)
     }
-    
     plot(0, ylim = c(0,1), xlim = c(0,1), type = "n", xaxt = "n", yaxt = "n", ylab = "", xlab = "")
     text(x = 0.5, y = 0.5, labels = paste("$", round(bondValue, 2)), cex = 5)
 })  
