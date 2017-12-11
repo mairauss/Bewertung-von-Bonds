@@ -64,7 +64,7 @@ ui <- fluidPage(
                mainPanel(
                  tabsetPanel(
                    tabPanel("Duration", plotOutput("duration")),
-                   tabPanel("Convexity")
+                   tabPanel("Convexity", plotOutput("convexity"))
                  )
                )
              
@@ -203,14 +203,24 @@ output$disc <- renderPlot({
 })
 output$duration <- renderPlot({
   # Calculate bond price today
+  
   bondPrice_now <- (input$coupon2 * input$faceValue2) * ((1 - 1 / (1 + input$ytm2)^(input$maturity2)) / input$ytm2) + input$faceValue2 / (1 + input$ytm2)^(input$maturity2)
   bondPrice_up <- (input$coupon2 * input$faceValue2) * ((1 - 1 / (1 + input$ytm2+input$yieldChange2)^(input$maturity2)) / (input$ytm2+input$yieldChange2)) + input$faceValue2 / (1 + input$ytm2+input$yieldChange2)^(input$maturity2)
   bondPrice_down <- (input$coupon2 * input$faceValue2) * ((1 - 1 / (1 + input$ytm2-input$yieldChange2)^(input$maturity2)) / (input$ytm2-input$yieldChange2)) + input$faceValue2 / (1 + (input$ytm2-input$yieldChange2))^(input$maturity2)
   duration<- (bondPrice_down-bondPrice_up)/(2*bondPrice_now*input$yieldChange2)
+  
   plot(0, ylim = c(0,1), xlim = c(0,1), type = "n", xaxt = "n", yaxt = "n", ylab = "", xlab = "")
   text(x = 0.5, y = 0.5, labels = paste(round(duration, 2)), cex = 5)
 })
+
+output$convexity <- renderPlot({
+  bondPrice_now <- (input$coupon2 * input$faceValue2) * ((1 - 1 / (1 + input$ytm2)^(input$maturity2)) / input$ytm2) + input$faceValue2 / (1 + input$ytm2)^(input$maturity2)
+  bondPrice_up <- (input$coupon2 * input$faceValue2) * ((1 - 1 / (1 + input$ytm2+input$yieldChange2)^(input$maturity2)) / (input$ytm2+input$yieldChange2)) + input$faceValue2 / (1 + input$ytm2+input$yieldChange2)^(input$maturity2)
+  bondPrice_down <- (input$coupon2 * input$faceValue2) * ((1 - 1 / (1 + input$ytm2-input$yieldChange2)^(input$maturity2)) / (input$ytm2-input$yieldChange2)) + input$faceValue2 / (1 + (input$ytm2-input$yieldChange2))^(input$maturity2)
+  convexity <- (bondPrice_up + bondPrice_down - 2*bondPrice_now)/(bondPrice_now*(input$yieldChange2)^2)
+  plot(0, ylim = c(0,1), xlim = c(0,1), type = "n", xaxt = "n", yaxt = "n", ylab = "", xlab = "")
+  text(x = 0.5, y = 0.5, labels = paste(round(convexity, 2)), cex = 5)
+})
 }
- 
 shinyApp(ui = ui, server = server)
 
