@@ -23,7 +23,7 @@ ui <- fluidPage(
     sidebarPanel(
       sliderInput("ytm", label = "Yield to Maturity", max = .2, min = 0.01, value = .05, step = .01),
       sliderInput("coupon", label = "Coupon Rate", max = .2, min = 0, value = .05, step = .01),
-      sliderInput("maturity", label = "Years to Maturity", max = 50, min = 1, value = 10),
+      sliderInput("maturity", label = "Years to Maturity", max = 50, min = 1, value = 3),
       sliderInput("faceValue", label = "Face Value", max = 10000, min = 1, value = 10),
       radioButtons("period", "Payment Period", choices = c("Annual" = "1", "Semiannual" = "2","Quarteterly"="3"), selected = "1")
       ),
@@ -99,14 +99,14 @@ output$graph <- renderPlot({
   for (i in 1:input$maturity) { 
     bondValue[i] <- (input$coupon * input$faceValue) * ((1 - 1 / (1 + input$ytm)^(years[i])) / input$ytm) + input$faceValue / (1 + input$ytm)^(years[i])
   }
-  plot(bondValue,type="l",col="blue",main = "Bond Price Relationship ")
+  plot(years, bondValue,type="l",col="blue",main = "Bond Price Relationship ")
   
 })
 
 output$table1 <- renderTable({
   
   bondValue=c()
-  
+                                                           
   years<-c(1:input$maturity)
   for (i in 1:input$maturity) { 
     bondValue[i] <- (input$coupon * input$faceValue) * ((1 - 1 / (1 + input$ytm)^(years[i])) / input$ytm) + input$faceValue / (1 + input$ytm)^(years[i])
@@ -153,7 +153,7 @@ output$PlotYield <- renderPlot({
 
 
 
-output$summary <- renderPlot({  
+ output$summary <- renderPlot({  
   
   ytm1<-c(0.01,0.02,0.03,0.04,0.05, 0.06,0.07, 0.08, 0.09, 0.1)
   
@@ -161,16 +161,15 @@ output$summary <- renderPlot({
   
   
   for (i in 1:10) { 
-    bondValue1[i] =(input$coupon1 * input$faceValue1 ) * ((1 - 1 / (1 + ytm1[i])^(input$maturity1)) / ytm1[i]) + input$faceValue1 / (1 + ytm1[i])^(input$maturity1)
-    
-  }
+   bondValue1[i] =(input$coupon1 * input$faceValue1 ) * ((1 - 1 / (1 + ytm1[i])^(input$maturity1)) / ytm1[i]) + input$faceValue1 / (1 + ytm1[i])^(input$maturity1)
+    }
   plot(bondValue1,type="l",col="blue",main = "yield price relationship ")
   
-})
+ })
 
 output$table <- renderTable({
   
-  bondValue1=c()
+ bondValue1=c()
   
   ytm1<-c(0.01,0.02,0.03,0.04,0.05, 0.06,0.07, 0.08, 0.09, 0.1)
   for (i in 1:10) { 
