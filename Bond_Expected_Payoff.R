@@ -64,8 +64,7 @@ ui <- fluidPage(
                mainPanel(
                  tabsetPanel(
                    tabPanel("Duration", plotOutput("duration")),
-                   tabPanel("Convexity", plotOutput("convexity")),
-                   tabPanel("Convexity Graphic", plotOutput("convGraph"))
+                   tabPanel("Convexity", plotOutput("convexity"))
                  )
                )
              
@@ -211,6 +210,7 @@ output$disc <- renderPlot({
   
 })
 output$duration <- renderPlot({
+  # Calculate bond price today
   
   bondPrice_now <- (input$coupon2 * input$faceValue2) * ((1 - 1 / (1 + input$ytm2)^(input$maturity2)) / input$ytm2) + input$faceValue2 / (1 + input$ytm2)^(input$maturity2)
   bondPrice_up <- (input$coupon2 * input$faceValue2) * ((1 - 1 / (1 + input$ytm2+input$yieldChange2)^(input$maturity2)) / (input$ytm2+input$yieldChange2)) + input$faceValue2 / (1 + input$ytm2+input$yieldChange2)^(input$maturity2)
@@ -228,23 +228,6 @@ output$convexity <- renderPlot({
   convexity <- (bondPrice_up + bondPrice_down - 2*bondPrice_now)/(bondPrice_now*(input$yieldChange2)^2)
   plot(0, ylim = c(0,1), xlim = c(0,1), type = "n", xaxt = "n", yaxt = "n", ylab = "", xlab = "")
   text(x = 0.5, y = 0.5, labels = paste(round(convexity, 2)), cex = 5)
-})
-output$convGraph <- renderPlot({  
-  
-  #yield2<-c(0.01:input$ytm2)
-  Yield2<-c(0.01,0.02,0.03,0.04,0.05, 0.06,0.07, 0.08, 0.09, 0.1)
-  Yield3=c()
-  bondPrice2=c()
-  #Yield2=c()
-  
-  for (i in 1:(input$ytm2*100)) { 
-    bondPrice2[i] <- (input$coupon2 * input$faceValue2) * ((1 - 1 / (1 + Yield2[i])^(i)) / Yield2[i]) + input$faceValue2 / (1 + Yield2[i])^(i)
-    Yield3[i]<- i
-  }
-  #plot(bondPrice2,type="l",col="blue",main = "yield price relationship ")
-  plot(Yield3, bondPrice2,type="l",col="blue",main = "Yield-Price relationship ")
-  #data.frame (bondPrice2,Yield3)
-  
 })
 }
 shinyApp(ui = ui, server = server)
