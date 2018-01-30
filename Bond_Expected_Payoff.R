@@ -9,7 +9,7 @@ library(pracma)
 library(FinancialMath)
 library(plotly)
 library(reshape2)
-library(ggplot2movies)
+#library(ggplot2movies)
 
 
 ui <- fluidPage(
@@ -46,7 +46,7 @@ ui <- fluidPage(
              mainPanel(
                  tabsetPanel(
                    tabPanel("Yield to Maturity", plotOutput("PlotYield")),
-                   tabPanel("Yield Price Relationship ", plotOutput("summary"),tableOutput("table"))
+                   tabPanel("Zinsstruktur ", plotOutput("summary"),tableOutput("table"))
                  )
                )
            )
@@ -152,31 +152,38 @@ output$PlotYield <- renderPlot({
 })
 
 
-
- output$summary <- renderPlot({  
+output$summary <- renderPlot({  
   
-  ytm1<-c(0.01,0.02,0.03,0.04,0.05, 0.06,0.07, 0.08, 0.09, 0.1)
+  zinssatz<-c(0.03,0.06,0.04,0.05,0.07, 0.06,0.04, 0.05, 0.07, 0.08)
   
-  bondValue1=c()
+  bondValue=c()
   
   
   for (i in 1:10) { 
-   bondValue1[i] =(input$coupon1 * input$faceValue1 ) * ((1 - 1 / (1 + ytm1[i])^(input$maturity1)) / ytm1[i]) + input$faceValue1 / (1 + ytm1[i])^(input$maturity1)
-    }
-  plot(bondValue1,type="l",col="blue",main = "yield price relationship ")
+    bondValue[i] =(input$coupon1 * input$faceValue1 ) * ((1 - 1 / (1 + zinssatz[i])^(i)) / zinssatz[i]) + input$faceValue1 / (1 + zinssatz[i])^(i)
+    
+    
+  }
+  plot( zinssatz,type="l",col="blue",main = "Zinsstuktur ")
   
- })
+})
+
+
+
 
 output$table <- renderTable({
   
- bondValue1=c()
+  bondValue=c()
+  time=c()
   
-  ytm1<-c(0.01,0.02,0.03,0.04,0.05, 0.06,0.07, 0.08, 0.09, 0.1)
+  zinssatz<-c(0.03,0.06,0.04,0.05,0.07, 0.06,0.04, 0.05, 0.07, 0.08)
   for (i in 1:10) { 
-    bondValue1[i] =(input$coupon1 * input$faceValue1 ) * ((1 - 1 / (1 + ytm1[i])^(input$maturity1)) / ytm1[i]) + input$faceValue1 / (1 + ytm1[i])^(input$maturity1)
+    bondValue[i] =(input$coupon1 * input$faceValue1 ) * ((1 - 1 / (1 + zinssatz[i])^(i)) / zinssatz[i]) + input$faceValue1 / (1 + zinssatz[i])^(i)
+    
   }
   
-  data.frame (bondValue1,ytm1)
+  
+  data.frame (zinssatz,bondValue)
   
   
 })

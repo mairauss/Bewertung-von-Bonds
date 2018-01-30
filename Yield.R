@@ -27,7 +27,7 @@ ui <- fluidPage(
         
         tabsetPanel(
           tabPanel("Yield to Maturity", plotOutput("PlotYield")),
-          tabPanel("yield price relationship ", plotOutput("summary"),tableOutput("table")),
+          tabPanel("Zinsstruktur ", plotOutput("summary"),tableOutput("table")),
           tabPanel("bond discount rate ", plotOutput("disc"))
           
         )
@@ -81,16 +81,17 @@ server <- function(input, output) {
   
   output$summary <- renderPlot({  
    
-    ytm<-c(0.01,0.02,0.03,0.04,0.05, 0.06,0.07, 0.08, 0.09, 0.1)
-    
+    zinssatz<-c(0.03,0.06,0.04,0.05,0.07, 0.06,0.04, 0.05, 0.07, 0.08)
+   
     bondValue=c()
     
   
     for (i in 1:10) { 
-      bondValue[i] =(input$coupon1 * input$faceValue ) * ((1 - 1 / (1 + ytm[i])^(input$maturity1)) / ytm[i]) + input$faceValue / (1 + ytm[i])^(input$maturity1)
+      bondValue[i] =(input$coupon1 * input$faceValue ) * ((1 - 1 / (1 + zinssatz[i])^(i)) / zinssatz[i]) + input$faceValue / (1 + zinssatz[i])^(i)
       
+     
     }
-    plot(bondValue,type="l",col="blue",main = "yield price relationship ")
+    plot( zinssatz,type="l",col="blue",main = "Zinsstuktur ")
   
 })
   
@@ -100,13 +101,16 @@ server <- function(input, output) {
   output$table <- renderTable({
     
     bondValue=c()
+    time=c()
     
-    ytm<-c(0.01,0.02,0.03,0.04,0.05, 0.06,0.07, 0.08, 0.09, 0.1)
+    zinssatz<-c(0.03,0.06,0.04,0.05,0.07, 0.06,0.04, 0.05, 0.07, 0.08)
     for (i in 1:10) { 
-      bondValue[i] =(input$coupon1 * input$faceValue ) * ((1 - 1 / (1 + ytm[i])^(input$maturity1)) / ytm[i]) + input$faceValue / (1 + ytm[i])^(input$maturity1)
-    }
+      bondValue[i] =(input$coupon1 * input$faceValue ) * ((1 - 1 / (1 + zinssatz[i])^(i)) / zinssatz[i]) + input$faceValue / (1 + zinssatz[i])^(i)
+      
+      }
     
-    data.frame (bondValue,ytm)
+    
+    data.frame (zinssatz,bondValue)
     
    
   })
